@@ -7,6 +7,8 @@ description: ClickUp Ticket Manager. Create tasks in ClickUp with quality descri
 
 **CLI tool: `clup.sh` (or `clup` if symlinked)**
 
+**Script Location:** Same directory as this SKILL.md file → `./clup.sh`
+
 **Prerequisites:**
 - Script must be executable: `chmod +x clup.sh`
 - Required ENV variables: `CLICKUP_API_KEY`, `CLICKUP_DEFAULT_LIST_ID`
@@ -23,6 +25,12 @@ User says:
 ## Your Job
 
 **Transform vague input into quality tickets with context!**
+
+**Execution:**
+1. Collect information if input is vague
+2. Build a good title + description (2-3 sentences)
+3. **Execute the command directly in the terminal** (use `run_in_terminal` or equivalent)
+4. Show the user the ClickUp URL from the response
 
 ### Quality Rules
 
@@ -43,10 +51,19 @@ User says:
      --description "Open port 443 from server web-01 (10.0.1.5) to db-prod (10.0.2.10). Required for API communication after migration. Coordination with network team needed."
 ```
 
+**Then execute this command (from the skill directory) and show the resulting URL to the user.**
+
 ## Command
 
+**You must execute this command in the terminal, not just show it to the user!**
+
+**Important:** The script `clup.sh` is in the same directory as this SKILL.md file.
+
 ```bash
-# Basic (use ./clup.sh or clup depending on installation)
+# Navigate to skill directory first, then execute
+cd $(dirname "$SKILL_FILE_PATH") && ./clup.sh --title "..." --description "..."
+
+# Or use relative path from skill directory:
 ./clup.sh --title "..." --description "..."
 
 # With priority
@@ -58,11 +75,21 @@ User says:
 # Tags: comma-separated list (optional)
 ```
 
-**Note:** If installed via symlink, use `clup` instead of `./clup.sh`
+**Note:** If symlinked to PATH, use `clup` instead of full path
 
 ## Response
 
-After success, show the user the ClickUp URL so they can click through.
+**After executing the command:**
+1. Parse the JSON output: `{"status":"ok","ticket_id":"...","url":"..."}`
+2. Show the user the ClickUp URL so they can click through
+3. Confirm ticket was created successfully
+
+**Example:**
+```
+✅ Ticket created: https://app.clickup.com/t/abc123xyz
+```
+
+**If command fails:** Show the error and help user troubleshoot (check ENV variables).
 
 ## Notes
 

@@ -149,20 +149,38 @@ else
     TAGS_JSON="[]"
 fi
 
-# Build JSON payload
-JSON_PAYLOAD=$(cat <<EOF
-{
-  "name": "$TITLE",
-  "description": "$DESCRIPTION",
-  "status": "$STATUS",
-  "tags": $TAGS_JSON
-}
-EOF
-)
-
-# Add priority only if set
+# Build JSON payload using jq to properly escape strings
+# This handles newlines, quotes, backslashes, and other special characters
 if [[ -n "$PRIORITY" ]]; then
-    JSON_PAYLOAD=$(echo "$JSON_PAYLOAD" | sed 's/}$/,\n  "priority": '"$PRIORITY"'\n}/')
+    # Build with priority
+    JSON_PAYLOAD=$(jq -n \
+        --arg title "$TITLE" \
+        --arg description "$DESCRIPTION" \
+        --arg status "$STATUS" \
+        --argjson tags "$TAGS_JSON" \
+        --argjson priority "$PRIORITY" \
+        '{
+            name: $title,
+            description: $description,
+            status: $status,
+            tags: $tags,
+            priority: $priority
+        }'
+    )
+else
+    # Build without priority
+    JSON_PAYLOAD=$(jq -n \
+        --arg title "$TITLE" \
+        --arg description "$DESCRIPTION" \
+        --arg status "$STATUS" \
+        --argjson tags "$TAGS_JSON" \
+        '{
+            name: $title,
+            description: $description,
+            status: $status,
+            tags: $tags
+        }'
+    )
 fi
 
 # Make API request
