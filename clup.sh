@@ -3,7 +3,7 @@
 # ClickUp Ticket Manager (clup)
 # Creates tasks in ClickUp with minimum quality standards
 
-set -euo pipefail
+set -eo pipefail  # Exit on error, catch pipeline failures (removed -u for better compatibility)
 
 # Color output
 RED='\033[0;31m'
@@ -35,10 +35,10 @@ Optional:
   --help                  Show this help
 
 Environment Variables:
-  CLICKUP_API_KEY           ClickUp API token (required)
-  CLICKUP_LIST_ID           Target list ID (required)
-  CLICKUP_DEFAULT_STATUS    Default status for new tasks (default: "BACKLOG")
-  CLICKUP_DEFAULT_TAG       Default tags, comma-separated (default: "automated")
+  CLICKUP_API_KEY              ClickUp API token (required)
+  CLICKUP_DEFAULT_LIST_ID      Target list ID (required)
+  CLICKUP_DEFAULT_STATUS       Default status for new tasks (default: "BACKLOG")
+  CLICKUP_DEFAULT_TAG          Default tags, comma-separated (default: "automated")
 
 Examples:
   clup --title "Open firewall port" \\
@@ -110,16 +110,16 @@ if [[ -z "${CLICKUP_API_KEY:-}" ]]; then
     exit 1
 fi
 
-if [[ -z "${CLICKUP_LIST_ID:-}" ]]; then
+if [[ -z "${CLICKUP_DEFAULT_LIST_ID:-}" ]]; then
     echo -e "${RED}╔════════════════════════════════════════════════════════════════╗${NC}" >&2
-    echo -e "${RED}║ Error: CLICKUP_LIST_ID environment variable not set           ║${NC}" >&2
+    echo -e "${RED}║ Error: CLICKUP_DEFAULT_LIST_ID environment variable not set   ║${NC}" >&2
     echo -e "${RED}╚════════════════════════════════════════════════════════════════╝${NC}" >&2
     echo "" >&2
     echo -e "${YELLOW}Please set your ClickUp List ID:${NC}" >&2
-    echo -e "  ${GREEN}export CLICKUP_LIST_ID=\"123456789\"${NC}" >&2
+    echo -e "  ${GREEN}export CLICKUP_DEFAULT_LIST_ID=\"123456789\"${NC}" >&2
     echo "" >&2
     echo "To make it permanent, add to ~/.zshrc or ~/.bashrc:" >&2
-    echo -e "  ${GREEN}echo 'export CLICKUP_LIST_ID=\"xxx\"' >> ~/.zshrc${NC}" >&2
+    echo -e "  ${GREEN}echo 'export CLICKUP_DEFAULT_LIST_ID=\"xxx\"' >> ~/.zshrc${NC}" >&2
     echo "" >&2
     echo "Find your List ID in the ClickUp URL:" >&2
     echo "  https://app.clickup.com/123456/v/li/901234567" >&2
@@ -167,7 +167,7 @@ fi
 
 # Make API request
 response=$(curl -s -w "\n%{http_code}" -X POST \
-    "https://api.clickup.com/api/v2/list/${CLICKUP_LIST_ID}/task" \
+    "https://api.clickup.com/api/v2/list/${CLICKUP_DEFAULT_LIST_ID}/task" \
     -H "Authorization: ${CLICKUP_API_KEY}" \
     -H "Content-Type: application/json" \
     -d "$JSON_PAYLOAD")

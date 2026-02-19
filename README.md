@@ -23,12 +23,9 @@ Prevents "open firewall" tickets without any context and enforces meaningful des
 cd clickup-ticket-manager
 chmod +x clup.sh
 
-# Create symlink in PATH
-sudo ln -s "$(pwd)/clup.sh" /usr/local/bin/clup
-
 # Set ENV variables
 echo 'export CLICKUP_API_KEY="pk_your_api_key_here"' >> ~/.zshrc
-echo 'export CLICKUP_LIST_ID="your_list_id_here"' >> ~/.zshrc
+echo 'export CLICKUP_DEFAULT_LIST_ID="your_list_id_here"' >> ~/.zshrc
 
 # Optional: Change default status (default is BACKLOG)
 echo 'export CLICKUP_DEFAULT_STATUS="to do"' >> ~/.zshrc
@@ -37,6 +34,13 @@ echo 'export CLICKUP_DEFAULT_STATUS="to do"' >> ~/.zshrc
 echo 'export CLICKUP_DEFAULT_TAG="bot-created,automated"' >> ~/.zshrc
 
 source ~/.zshrc
+
+# Now you can run it:
+./clup.sh --title "Test" --description "Testing the tool"
+
+# Optional: Add to PATH for system-wide access
+sudo ln -s "$(pwd)/clup.sh" /usr/local/bin/clup
+# Then you can use: clup --title "..." --description "..."
 ```
 
 ### Getting ClickUp API Key
@@ -56,6 +60,9 @@ source ~/.zshrc
 ### Basic Syntax
 
 ```bash
+./clup.sh --title "Title" --description "Description"
+
+# Or if you created a symlink:
 clup --title "Title" --description "Description"
 ```
 
@@ -63,27 +70,27 @@ clup --title "Title" --description "Description"
 
 **Standard Ticket:**
 ```bash
-clup --title "Firewall Rule for Server XY" \
+./clup.sh --title "Firewall Rule for Server XY" \
      --description "Open port 443 from web-01 (10.0.1.5) to db-prod (10.0.2.10). Required for API communication after migration. Coordination with network team needed."
 ```
 
 **High Priority:**
 ```bash
-clup --title "Login not working" \
+./clup.sh --title "Login not working" \
      --description "Login page returns 500 error since 2:30 PM. All users affected. Likely caused by last deployment." \
      --priority high
 ```
 
 **Urgent (Production Down):**
 ```bash
-clup --title "Database offline" \
+./clup.sh --title "Database offline" \
      --description "Production database db-prod not responding. All services offline since 3:45 PM. Immediate action required!" \
      --priority urgent
 ```
 
 **Low Priority (Nice-to-Have):**
 ```bash
-clup --title "Improve Dashboard UI" \
+./clup.sh --title "Improve Dashboard UI" \
      --description "Calendar widget could be larger for better readability. User feedback from meeting. Not a blocker, more of an enhancement." \
      --priority low
 ```
@@ -133,11 +140,11 @@ echo 'export CLICKUP_API_KEY="pk_xxx..."' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-### "CLICKUP_LIST_ID environment variable not set"
+### "CLICKUP_DEFAULT_LIST_ID environment variable not set"
 
 Find your List ID in the ClickUp URL and set it:
 ```bash
-export CLICKUP_LIST_ID="123456789"
+export CLICKUP_DEFAULT_LIST_ID="123456789"
 ```
 
 ### "Failed to create task (HTTP 401)"
